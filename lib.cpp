@@ -890,7 +890,7 @@ int solution(int n, int m, double *a, double *b, double *x,
     int is_l = (l == 0) ? 0:1; 
     
     
-    for(int c =0; c < k  ;c++) colsw[c]=c;
+    for(int c =0; c < k + is_l ;c++) colsw[c]=c;
 
     for(int i = 0 ; i < k + is_l; i++)
     {   
@@ -1112,18 +1112,16 @@ int solution(int n, int m, double *a, double *b, double *x,
     //начало обратного хода
         
 
-    cout<<"colsw : "<<endl;
-    for(int i = 0 ; i < k ; i++) cout<<colsw[i]<<" ";
+    // Обратный ход в текущем порядке столбцов
+    back_substitution(a, b, x, n, m);
 
-    for(int i =0 ; i < n ; i++)
+    // Восстановление исходного порядка переменных по colsw
     {
-        x[i] = (i+1)%2;
+        double* x_tmp = new double[n];
+        undo_block_column_permutation_and_build_x(n, m, colsw, x, x_tmp);
+        for (int i = 0; i < n; ++i) x[i] = x_tmp[i];
+        delete [] x_tmp;
     }
-    // undo_block_column_permutation_and_build_x(n,m,colsw,b,x);
-
-    // back_substitution(a,b,x,n,m);
-    
-    // undo_block_column_permutation_and_build_x(n,m,colsw,b,x);
 
     return 0;
 

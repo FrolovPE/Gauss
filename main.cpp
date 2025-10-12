@@ -186,7 +186,7 @@ int main(int argc, char *argv[])
     // double *vecx_l = new double[l];
     double *tmpvecb_m = new double[m];
     double *tmpvecb_l = new double[l]; 
-    int *colsw = new int[k];
+    int *colsw = new int[k + (l > 0 ? 1 : 0)];
     double eps = 1e-16*normofmatrix(a,n);
 
     auto start_sol= std::chrono::high_resolution_clock::now();
