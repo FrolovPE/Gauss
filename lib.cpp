@@ -1077,7 +1077,12 @@ int solution(int n, int m, double *a, double *b, double *x,
         if(i<k)
         {
             get_block(a,diagblock_mm,n,m,i,i);
-            inverse(diaginvblock_mm,diagblock_mm,m,eps);
+            
+            if(!(inverse(diaginvblock_mm,diagblock_mm,m,eps)))
+            {
+                        printf("block has no inverse\n");
+                        return -1;
+                    }
 
             get_vec_block(b,vecb_m,n,m,i);
             mat_x_vector(tmpvecb_m,diaginvblock_mm,vecb_m,m);// double *resvec = mat_x_vector(diaginvblock_mm,vecb_m,m);
@@ -1118,7 +1123,11 @@ int solution(int n, int m, double *a, double *b, double *x,
                 // cout<<"vecb_l:"<<endl;
                 // printlxn(vecb_l,l,1,l,n);
 
-                inverse(invblock_ll,block_ll,l,eps);
+                if(!(inverse(invblock_ll,block_ll,l,eps)))
+                    {
+                        printf("block has no inverse\n");
+                        return -1;
+                    }
 
                 
                 // printlxn(invblock_ll,l,l,l,n);
