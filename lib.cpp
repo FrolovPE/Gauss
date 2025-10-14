@@ -861,6 +861,128 @@ void back_substitution(double* A, double* b, double* x, int n, int m)
 
 
 
+
+void multiplication(double* Result, double* Block_A, double* Block_B, const int row_A, const int col_row,const int col_B)
+{
+    int row_l = row_A % 3;
+    int col_l = col_B % 3;
+    int row_k = (row_A - row_l) / 3;
+    int col_k = (col_B - col_l) / 3;
+    double res_00 = 0, res_01 = 0, res_02 = 0;
+    double res_10 = 0, res_11 = 0, res_12 = 0;
+    double res_20 = 0, res_21 = 0, res_22 = 0;
+
+    for (int b_i = 0; b_i < row_k; b_i++) {
+        for (int b_j = 0; b_j < col_k; b_j++) {
+            res_00 = 0, res_01 = 0, res_02 = 0;
+            res_10 = 0, res_11 = 0, res_12 = 0;
+            res_20 = 0, res_21 = 0, res_22 = 0;
+            for (int s = 0; s < col_row; s++) {
+                res_00 += Block_A[b_i * 3 * col_row + s] * Block_B[s * col_B + b_j * 3];
+                res_01 += Block_A[b_i * 3 * col_row + s] * Block_B[s * col_B + b_j * 3 + 1];
+                res_02 += Block_A[b_i * 3 * col_row + s] * Block_B[s * col_B + b_j * 3 + 2];
+
+                res_10 += Block_A[(b_i * 3 + 1) * col_row + s] * Block_B[s * col_B + b_j * 3];
+                res_11 += Block_A[(b_i * 3 + 1) * col_row + s] * Block_B[s * col_B + b_j * 3 + 1];
+                res_12 += Block_A[(b_i * 3 + 1) * col_row + s] * Block_B[s * col_B + b_j * 3 + 2]; 
+
+                res_20 += Block_A[(b_i * 3 + 2) * col_row + s] * Block_B[s * col_B + b_j * 3];
+                res_21 += Block_A[(b_i * 3 + 2) * col_row + s] * Block_B[s * col_B + b_j * 3 + 1];
+                res_22 += Block_A[(b_i * 3 + 2) * col_row + s] * Block_B[s * col_B + b_j * 3 + 2];
+            }
+
+            Result[b_i * 3 * col_B + b_j * 3] = res_00; Result[b_i * 3 * col_B + b_j * 3 + 1] = res_01; Result[b_i * 3 * col_B + b_j * 3 + 2] = res_02;
+            Result[(b_i * 3 + 1) * col_B + b_j * 3] = res_10; Result[(b_i * 3 + 1) * col_B + b_j * 3 + 1] = res_11; Result[(b_i * 3 + 1) * col_B + b_j * 3 + 2] = res_12;
+            Result[(b_i * 3 + 2) * col_B + b_j * 3] = res_20; Result[(b_i * 3 + 2) * col_B + b_j * 3 + 1] = res_21; Result[(b_i * 3 + 2) * col_B + b_j * 3 + 2] = res_22;
+        }
+
+        if (col_l != 0) {
+            res_00 = 0, res_01 = 0, res_10 = 0;
+            res_11 = 0, res_20 = 0, res_21 = 0;
+
+            for (int s = 0; s < col_row; s++) {
+                if(col_l > 1) {
+                    res_01 += Block_A[b_i * 3 * col_row + s] * Block_B[s * col_B + col_k * 3 + 1];
+                    res_11 += Block_A[(b_i * 3 + 1) * col_row + s] * Block_B[s * col_B + col_k * 3 + 1];
+                    res_21 += Block_A[(b_i * 3 + 2) * col_row + s] * Block_B[s * col_B + col_k * 3 + 1];
+                }
+
+                res_00 += Block_A[b_i * 3 * col_row + s] * Block_B[s * col_B + col_k * 3];
+                res_10 += Block_A[(b_i * 3 + 1) * col_row + s] * Block_B[s * col_B + col_k * 3];
+                res_20 += Block_A[(b_i * 3 + 2) * col_row + s] * Block_B[s * col_B + col_k * 3];
+            }
+
+            Result[b_i * 3 * col_B + col_k * 3] = res_00; 
+            Result[(b_i * 3 + 1) * col_B + col_k * 3] = res_10;
+            Result[(b_i * 3 + 2) * col_B + col_k * 3] = res_20;
+
+            if(col_l > 1) {
+                Result[b_i * 3 * col_B + col_k * 3 + 1] = res_01; 
+                Result[(b_i * 3 + 1) * col_B + col_k * 3 + 1] = res_11;
+                Result[(b_i * 3 + 2) * col_B + col_k * 3 + 1] = res_21;
+            }
+        }
+            
+    }
+
+    if(row_l != 0) {
+        for (int b_j = 0; b_j < col_k; b_j++) {
+            res_00 = 0, res_01 = 0, res_02 = 0;
+            res_10 = 0, res_11 = 0, res_12 = 0;
+            for (int s = 0; s < col_row; s++) {
+                res_00 += Block_A[(row_k * 3) * col_row + s] * Block_B[s * col_B + b_j * 3];
+                res_01 += Block_A[(row_k * 3) * col_row + s] * Block_B[s * col_B + b_j * 3 + 1];
+                res_02 += Block_A[(row_k * 3) * col_row + s] * Block_B[s * col_B + b_j * 3 + 2]; 
+
+                if(row_l > 1) {
+                    res_10 += Block_A[(row_k * 3 + 1) * col_row + s] * Block_B[s * col_B + b_j * 3];
+                    res_11 += Block_A[(row_k * 3 + 1) * col_row + s] * Block_B[s * col_B + b_j * 3 + 1];
+                    res_12 += Block_A[(row_k * 3 + 1) * col_row + s] * Block_B[s * col_B + b_j * 3 + 2]; 
+                }
+            }
+
+            Result[row_k * 3 * col_B + b_j * 3] = res_00; Result[row_k * 3 * col_B + b_j * 3 + 1] = res_01; Result[row_k * 3 * col_B + b_j * 3 + 2] = res_02;
+
+            if (row_l > 1) {
+                Result[(row_k * 3 + 1) * col_B + b_j * 3] = res_10; Result[(row_k * 3 + 1) * col_B + b_j * 3 + 1] = res_11; Result[(row_k * 3 + 1) * col_B + b_j * 3 + 2] = res_12;
+            }
+        }
+
+        if(col_l != 0) {
+            res_00 = 0, res_01 = 0;
+            res_10 = 0, res_11 = 0;
+            for (int s = 0; s < col_row; s++) {
+                res_00 += Block_A[row_k * 3 * col_row + s] * Block_B[s * col_B + col_k * 3];
+                if (col_l > 1) {
+                    res_01 += Block_A[row_k * 3 * col_row + s] * Block_B[s * col_B + col_k * 3 + 1];
+                }
+                if(row_l > 1) {
+                    res_10 += Block_A[(row_k * 3  + 1) * col_row + s] * Block_B[s * col_B + col_k * 3];
+                }
+                if (col_l > 1 && row_l > 1) {
+                    res_11 += Block_A[(row_k * 3  + 1) * col_row + s] * Block_B[s * col_B + col_k * 3 + 1];
+                }
+            }
+
+            Result[row_k * 3 * col_B + col_k * 3] = res_00;
+
+            if (col_l > 1) {
+                Result[row_k * 3 * col_B + col_k * 3 + 1] = res_01;
+            }
+            
+            if (row_l > 1) {
+                Result[(row_k * 3 + 1) * col_B + col_k * 3] = res_10;
+            }
+
+            if (row_l > 1 && col_l > 1) {
+                Result[(row_k * 3 + 1) * col_B + col_k * 3 + 1] = res_11;
+            }
+        }     
+    }      
+}
+
+
+
 int solution(int n, int m, double *a, double *b, double *x,
     double *block_mm, double *block_ml, double *block_ll,double *invblock_mm, double *diaginvblock_mm, 
     double *invblock_ll,double *diagblock_mm,
@@ -967,7 +1089,7 @@ int solution(int n, int m, double *a, double *b, double *x,
             {
                 get_block(a,block_mm,n,m,i,j);
                 
-                matmult(tmpblock_mm,diaginvblock_mm,block_mm,m,m,m);// double *resmult = matmult(diaginvblock_mm,block_mm,m,m,m)
+               multiplication(tmpblock_mm,diaginvblock_mm,block_mm,m,m,m);// matmult(tmpblock_mm,diaginvblock_mm,block_mm,m,m,m);// double *resmult = matmult(diaginvblock_mm,block_mm,m,m,m)
 
                 set_block(a,tmpblock_mm,n,m,i,j);
                 
@@ -980,7 +1102,7 @@ int solution(int n, int m, double *a, double *b, double *x,
             if(is_l != 0)
             {
                 get_block_ml(a,block_ml,n,m,l,i);
-                matmult(tmpblock_ml,diaginvblock_mm,block_ml,m,m,l);
+                multiplication(tmpblock_ml,diaginvblock_mm,block_ml,m,m,l);// matmult(tmpblock_ml,diaginvblock_mm,block_ml,m,m,l);
                 set_block_ml(a,tmpblock_ml,n,m,l,i);
             }
             
@@ -1001,7 +1123,7 @@ int solution(int n, int m, double *a, double *b, double *x,
                 
                 // printlxn(invblock_ll,l,l,l,n);
 
-                matmult(tmpblock_ll,invblock_ll,block_ll,l,l,l);
+                multiplication(tmpblock_ll,invblock_ll,block_ll,l,l,l);// matmult(tmpblock_ll,invblock_ll,block_ll,l,l,l);
 
                 mat_x_vector(tmpvecb_l,invblock_ll,vecb_l,l);
                 
@@ -1125,6 +1247,25 @@ int solution(int n, int m, double *a, double *b, double *x,
     
     // undo_block_column_permutation_and_build_x(n,m,colsw,b,x);
 
+    // printf("a[%d,%d] = %lf, b[%d] = %lf\n",k,k,a[k*n+k],k,b[k]);
+    // for(int i = n-1 ; i >= 0 ;i--)
+    // {
+    //     for(int j = 0; j < i ; j++)
+    //     {
+    //         // printf("a[%d,%d] = %lf, b[%d] = %lf,a[%d,%d] = %lf\n",j,i,a[j*n+i],j,b[j],i,i,a[i*n+i]);
+    //         double dd = a[i*n+i]*a[j*n+i];
+    //         a[j*n+i] -= a[i*n+i]*dd;
+    //         b[j] -= dd*b[i];
+    //         // printf("a[%d,%d] = %lf, b[%d] = %lf,a[%d,%d] = %lf\n",j,i,a[j*n+i],j,b[j],i,i,a[i*n+i]);
+    //     }
+    //     // break;
+    //     // return 0;
+    // }
+
+
+
     return 0;
 
 }
+
+
