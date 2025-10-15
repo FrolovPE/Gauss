@@ -1243,18 +1243,19 @@ int solution(int n, int m, double *a, double *b, double *x,
     //начало обратного хода
         
 
-    cout<<"colsw : "<<endl;
-    for(int i = 0 ; i < k ; i++) cout<<colsw[i]<<" ";
+    // Выполняем обратный ход для получения решения в текущем порядке столбцов
+    back_substitution(a, b, x, n, m);
 
-    for(int i =0 ; i < n ; i++)
-    {
-        x[i] = (i+1)%2;
-    }
-    // undo_block_column_permutation_and_build_x(n,m,colsw,b,x);
+    // Формируем полный массив перестановок блок‑столбцов (включая последний l-блок)
+    int block_count = k + is_l;
+    std::vector<int> colsw_full(block_count, 0);
+    for (int i = 0; i < k; ++i) colsw_full[i] = colsw[i];
+    if (is_l) colsw_full[k] = k;
 
-    // back_substitution(a,b,x,n,m);
-    
-    // undo_block_column_permutation_and_build_x(n,m,colsw,b,x);
+    // Переносим решение в исходный порядок неизвестных
+    std::vector<double> x_out(n, 0.0);
+    undo_block_column_permutation_and_build_x(n, m, colsw_full.data(), x, x_out.data());
+    for (int i = 0; i < n; ++i) x[i] = x_out[i];
 
     // printf("a[%d,%d] = %lf, b[%d] = %lf\n",k,k,a[k*n+k],k,b[k]);
     // for(int i = n-1 ; i >= 0 ;i--)
