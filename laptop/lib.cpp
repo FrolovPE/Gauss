@@ -905,7 +905,7 @@ int solution(int n, int m, double *a, double *b, double *x,
 
     for(int i = 0 ; i < k + is_l; i++)
     {   
-        double minNorm = 1e16;
+        double minNorm = 1e64;
         int mainBlock = i;
 
         if(i != k)
@@ -951,7 +951,7 @@ int solution(int n, int m, double *a, double *b, double *x,
             minNorm = normofmatrix(invblock_ll,l);
         }
 
-        if(fabs(minNorm - 1e16) < eps)
+        if(fabs(minNorm - 1e64) < eps)
         {
             printf("No inverse matrix in row %d\n",i);
             return -1;

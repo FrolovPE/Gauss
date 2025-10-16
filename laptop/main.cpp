@@ -248,16 +248,6 @@ int main(int argc, char *argv[])
             {
                 a[_c] = el;
                 _c++;
-            }else
-            {
-                printf("Bad scan from file %s\n",filename);
-                report(argv[0],task,r1,r2,t1,t2,s,n,m); 
-                delete []a;
-                delete []b;
-                delete []x;
-                delete []realx;
-                fclose(file);
-                return 0;
             }
 
         
