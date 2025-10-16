@@ -9,6 +9,7 @@ a.out: $(obj)
 	g++ $(cxx) $(obj) -o a.out
 
 zip:
+
 	zip Frolov_PS.zip $(obj) makefile
 
 gp.out: $(obj)

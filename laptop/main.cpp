@@ -1,6 +1,8 @@
 #include <iostream>
 #include "lib.h"
 #include <chrono>
+
+
 using namespace std;
 
 int main(int argc, char *argv[])
@@ -10,13 +12,15 @@ int main(int argc, char *argv[])
     char *filename=nullptr;
     double r1=0, r2=0,el;
     double t1=0, t2=0;
+
+
     
     filename=filename;
 
     if(!((argc == 5 || argc == 6) && sscanf(argv[1], "%d", &n)==1 && sscanf(argv[2], "%d", &m)==1 && sscanf(argv[3], "%d", &r)==1 && sscanf(argv[4], "%d", &s)==1)) 
     {
         cout<<"Usage : "<<argv[0]<<" <n> "<<" <m> "<<" <r> "<<" <s>"<<endl;
-        // report(argv[0],task,r1,r2,t1,t2,s,n,m);
+      
         return 0;
     }
 
@@ -76,7 +80,7 @@ int main(int argc, char *argv[])
         
         }
         if(!feof(file) || _c!=n*n){
-            printf("Bad file\n");
+            printf("Bad file %s\n",filename);
             report(argv[0],task,r1,r2,t1,t2,s,n,m); 
             fclose(file);
             delete []a;
@@ -147,38 +151,14 @@ int main(int argc, char *argv[])
     
     
     
-    
-    // double* inv = new double[n*n];
 
-    // inv = inverse(a,n,eps); //delete []inv
-    
-
-    // cout<<"INVERSE OF A"<<endl;
-
-    // printlxn(inv,n,n,n,r);
-    // delete []inv;
     int k,l;
 
     k = n/m; l = n - m*k ;
 
 
 
-    // double *bl1 = new double[l*l];
-    // get_block(a,bl1,n,l,k,k);
-    // printlxn(bl1,l,l,l,n);
-    // double *vb0 = new double[m];
-    // double *vb1 = new double[m];
-    // get_block(a,bl1,n,m,0,1);
-    // get_vec_block(b,vb0,n,m,0);
-    // get_vec_block(b,vb1,n,m,1);
-    // vec_mult_sub(vb1,bl1,vb0,m);
-    
-    // double *bl2 = new double[m*m];
-    // double *res = new double[m*m];
-    // get_block(a,bl1,n,m,0,0);
-    // get_block(a,bl2,n,m,0,1);
-    // matsub(res,bl1,bl2,m,m);
-    // printlxn(res,m,m,m,m);
+
 
     double *block_mm = new double[m*m];
     double *block_ml = new double[m*l];
@@ -193,8 +173,6 @@ int main(int argc, char *argv[])
     double *diaginvblock_mm = new double[m*m];
     double *vecb_m = new double[m];
     double *vecb_l = new double[l];
-    // double *vecx_m = new double[m];
-    // double *vecx_l = new double[l];
     double *tmpvecb_m = new double[m];
     double *tmpvecb_l = new double[l]; 
     int *colsw = new int[k];
@@ -228,8 +206,6 @@ int main(int argc, char *argv[])
         delete []diaginvblock_mm ;
         delete []vecb_m ;
         delete []vecb_l ;
-        // delete []vecx_m ;
-        // delete []vecx_l ;
         delete []tmpvecb_m ;
         delete []tmpvecb_l ; 
         delete []colsw ;
@@ -238,10 +214,7 @@ int main(int argc, char *argv[])
 
     }
 
-        // printlxn(a,n,n,n,r);
-        // printlxn(b,n,1,n,r);
 
-    // printf("Norm of a = %lf\n", normofmatrix(a,n));  good
     
 
     auto end_sol = std::chrono::high_resolution_clock::now();
@@ -253,10 +226,86 @@ int main(int argc, char *argv[])
 
     auto start_res= std::chrono::high_resolution_clock::now();
 
+    
+
+    //reinit
+
+
+    if(argc == 5 && s>=1 && s<=4)
+    {
+        init(a,&f,n,s);
+    }
+
+    if(argc == 6 && s == 0 ) 
+    {
+        filename = argv[5];
+        FILE *file = fopen(filename,"r");
+        
+
+        while(fscanf(file,"%lf",&el)==1)
+        {
+            if(_c<n*n) 
+            {
+                a[_c] = el;
+                _c++;
+            }else
+            {
+                printf("Bad scan from file %s\n",filename);
+                report(argv[0],task,r1,r2,t1,t2,s,n,m); 
+                delete []a;
+                delete []b;
+                delete []x;
+                delete []realx;
+                fclose(file);
+                return 0;
+            }
+
+        
+        }
+        if(!feof(file) || _c!=n*n){
+            printf("Bad file\n");
+            report(argv[0],task,r1,r2,t1,t2,s,n,m); 
+            fclose(file);
+            delete []a;
+            delete []b;
+            delete []x;
+            delete []realx;
+            return 0;
+        }
+        fclose(file);
+    }
+    else if(argc == 6 && s!=0)
+    {
+        printf("Wrong usage! If s!=0 dont use initialization from file or s == 0 and file name not specified \n");
+        report(argv[0],task,r1,r2,t1,t2,s,n,m); 
+        delete []a;
+        delete []b;
+        delete []x;
+        delete []realx;
+        return 0;
+    }
+
+  
+
+    //reinit vector b
+
+    for (int i = 0; i < n; i++)
+    {   
+        double sumbi = 0;
+        for(int k = 0; k <(n-1)/2+1 ; k++)
+        {
+            sumbi+= a[i*n+2*k];
+            
+            
+        }
+        
+        b[i] = sumbi;
+        
+    }
+
     double *Ax = new double[n];//mat_x_vector(a,x,n);
     double *Ax_b = new double[n];//vectorsub( Ax , b, n);
     double *x_realx = new double[n];//vectorsub( x , realx, n);
-
 
     residuals(r1,r2,a,b,x,realx,n,Ax,Ax_b,x_realx);
 
@@ -272,23 +321,7 @@ int main(int argc, char *argv[])
     t1 = chrono::duration<double>(end_sol - start_sol ).count();
     t2 = chrono::duration<double>(end_res - start_res).count();
 
-//    double *test1 = new double[5*4];
-//    double *test2 = new double[4*7];
-//    for(int i  = 0; i<5;i++){
-//     for(int j = 0 ;j<4;j++){
-//         test1[i*4+j] = i+j;
-//     }
-//    }
-//    for(int i  = 0; i<4;i++){
-//     for(int j = 0 ;j<7;j++){
-//         test2[i*4+j] = i-j;
-//     }
-//    }
-//    double *res = new double[5*7];
-//    res = matmult(test1,test2,5,4,7);
-//    printlxn(test1,4,5,4,5);
-//    printlxn(test2,7,4,7,7);
-//    printlxn(res,7,5,7,7);
+
 
     report(argv[0],task,r1,r2,t1,t2,s,n,m); 
 
@@ -309,8 +342,6 @@ int main(int argc, char *argv[])
         delete []diaginvblock_mm ;
         delete []vecb_m ;
         delete []vecb_l ;
-        // delete []vecx_m ;
-        // delete []vecx_l ;
         delete []tmpvecb_m ;
         delete []tmpvecb_l ; 
         delete []colsw ;

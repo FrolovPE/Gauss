@@ -40,6 +40,4 @@ void vec_eq(double *x, double *b, int m);
 void vec_sub(double *x, double *b, int m);
 void vec_mult_sub(double* Result, double* A, double* vec, int m);
 void vec_mult_sub_lm(double* Result, double* A, double* vec, int l,int m);
-void undo_block_column_permutation_and_build_x(int n, int m, const int* colsw, const double* x_cur, double* x_out);
-void back_substitution(double* A, double* b, double* x, int n, int m);
 void multiplication(double* Result, double* Block_A, double* Block_B, const int row_A, const int col_row,const int col_B);

@@ -20,59 +20,7 @@ void printlxn(const double *a, int size, int l, int n, int r)
     cout<<endl;
 
 }
-// {
-//     size = size;
-//     if(n>=r && l>=r) //l<r -> n<r ->n<r and l<r
-//     {
-        
-//         for(int i =0 ; i < r ; i++){
-//         cout<<endl;
-//         for(int j = 0; j < r; j++)
-//             {
 
-                
-//                     printf("%10.3e ",a[i*size+j]);
-                
-//             }
-            
-//         }
-
-//     }else if (l>=r && n<=r)
-//     {
-//         for(int i =0 ; i < r ; i++){
-//         cout<<endl;
-//         for(int j = 0; j < n; j++)
-//         {
-//              printf("%10.3e ",a[i*size+j]);
-//         }   
-        
-//         }
-//     }else if (l<=r && n>=r)
-//     {
-//         for(int i =0 ; i < l ; i++){
-//         cout<<endl;
-//         for(int j = 0; j < r ; j++)
-//         {
-//             printf("%10.3e ",a[i*size+j]);
-//         }   
-        
-//         }
-//     }
-    
-//     else
-//     {
-//      for(int i =0 ; i < l ; i++){
-//         cout<<endl;
-//         for(int j = 0; j < n; j++)
-//         {
-//             printf("%10.3e ",a[i*size+j]);
-//         }   
-        
-//         }
-//     }
-
-//     printf("\n");
-// }
 
 double f (int s , int n , int i , int j)
 {
@@ -170,6 +118,24 @@ void residuals(double &r1,double &r2,double *a,double *b,double *x,double *realx
     mat_x_vector(Ax,a,x,n);// double *Ax = mat_x_vector(a,x,n);
     vectorsub(Ax_b,Ax,b,n);// double *Ax_b = vectorsub( Ax , b, n);
     vectorsub(x_realx,x,realx,n);// double *x_realx = vectorsub( x , realx, n);
+
+    // cout<<"\nVector Ax :"<<endl;
+    // for(int i =0 ; i<n ; i++)
+    // {
+    //     printf("%10.3e ",Ax[i]);
+    // }
+
+    // cout<<"\nVector b :"<<endl;
+    // for(int i =0 ; i<n ; i++)
+    // {
+    //     printf("%10.3e ",b[i]);
+    // }
+
+    // cout<<"\nVector Ax_b :"<<endl;
+    // for(int i =0 ; i<n ; i++)
+    // {
+    //     printf("%10.3e ",Ax_b[i]);
+    // }
 
     r1 = vectornorm(Ax_b ,  n) / vectornorm(b,n);
     r2 = vectornorm(x_realx ,  n) / vectornorm(realx,n);
@@ -455,17 +421,17 @@ void swap_block_columns(double *a, int n,int m, int i, int j)
 
 void swap_block_vec(double *a, int n,int m, int i, int j)
 {
+    n=n;
     for(int p =0 ; p < m ; p++)
                 {
-                    for(int c = 0; c<n ; c++)
-                    {
+                    
                         //должны свапнуть столбцы блоков 
                         swap(a[i*m+p],a[j*m+p]);
                         
-                    }
+                    
                 }
                 
-                // printf("swapped blocks %d and %d\n",i,j);
+               
 }
 
 void get_vec_block(double *b,double *block,int n, int m, int i)
@@ -783,124 +749,6 @@ void vec_mult_sub_lm(double* Result, double* A, double* vec, int l,int m) {
 
 
 
-void undo_block_column_permutation_and_build_x(int n, int m, const int* colsw, const double* x_cur, double* x_out)
-{
-    int k = n / m;
-    int l = n - k * m;
-    int block_count = k + (l > 0 ? 1 : 0);
-
-    // Проверка безопасности (по желанию)
-    if (!colsw || !x_cur || !x_out) return;
-
-    // sizes per block (block i has size block_sz[i])
-    std::vector<int> block_sz(block_count);
-    for (int i = 0; i < block_count; ++i)
-        block_sz[i] = (i < k ? m : l); // если l == 0, последний блок_sz будет 0 — но тогда block_count == k
-
-    // offsets: offs[0] = 0, offs[1] = block_sz[0], ...
-    std::vector<int> offs(block_count + 1, 0);
-    for (int i = 0; i < block_count; ++i)
-        offs[i + 1] = offs[i] + block_sz[i];
-
-    // Проверка: суммарный размер должен равняться n
-    if (offs[block_count] != n) {
-        // неконсистентность — сигнал к отладке
-        return;
-    }
-
-    // Инициализируем выходной вектор (опционально нулями)
-    // for (int i = 0; i < n; ++i) x_out[i] = 0.0;
-
-    // Для каждой текущей позиции p: поместимBlock x_cur[p] в x_out в позицию colsw[p]
-    for (int p = 0; p < block_count; ++p) {
-        int src_off = offs[p];
-        int src_len = block_sz[p];
-
-        int dst_block = colsw[p]; // original block index for current position p
-        if (dst_block < 0 || dst_block >= block_count) {
-            // некорректный индекс — сигнал к отладке
-            return;
-        }
-        int dst_off = offs[dst_block];
-        int dst_len = block_sz[dst_block];
-
-        // В идеале src_len == dst_len. Если они отличаются, нужно разбираться:
-        if (src_len != dst_len) {
-            // Перестановки блоков с разными размерами — опасная ситуация,
-            // но её можно обработать как минимум до min_len:
-            int min_len = (src_len < dst_len) ? src_len : dst_len;
-            for (int t = 0; t < min_len; ++t)
-                x_out[dst_off + t] = x_cur[src_off + t];
-            // если хотим, можно заполнить оставшиеся элементы нулями либо сигнализировать об ошибке
-        } else {
-            // Копируем блок
-            // memcpy(&x_out[dst_off], &x_cur[src_off], src_len * sizeof(double));
-            for (int t = 0; t < src_len; ++t)
-                x_out[dst_off + t] = x_cur[src_off + t];
-        }
-    }
-}
-
-
-void back_substitution(double* A, double* b, double* x, int n, int m)
-{
-    int k = n / m;
-    int l = n - k * m;
-    int block_count = k + (l > 0 ? 1 : 0);
-
-    // размер каждого блока
-    std::vector<int> block_sz(block_count);
-    for (int i = 0; i < block_count; ++i)
-        block_sz[i] = (i < k ? m : l);
-
-    // смещения
-    std::vector<int> offset(block_count + 1, 0);
-    for (int i = 0; i < block_count; ++i)
-        offset[i + 1] = offset[i] + block_sz[i];
-
-    // временные вектора
-    std::vector<double> tmp(m * m, 0.0);
-    std::vector<double> rhs_vec(m, 0.0);
-
-    // обратный ход (снизу вверх)
-    for (int bi = block_count - 1; bi >= 0; --bi)
-    {
-        int bs = block_sz[bi]; // размер блока
-        int row_off = offset[bi];
-
-        // b_i' = b_i - sum_{j>i} A_ij * x_j
-        std::vector<double> rhs(bs, 0.0);
-        for (int t = 0; t < bs; ++t)
-            rhs[t] = b[row_off + t];
-
-        for (int bj = bi + 1; bj < block_count; ++bj)
-        {
-            int cs = block_sz[bj];
-            int col_off = offset[bj];
-
-            // A_ij * x_j
-            for (int r = 0; r < bs; ++r)
-            {
-                double s = 0.0;
-                for (int c = 0; c < cs; ++c)
-                    s += A[(row_off + r) * n + (col_off + c)] * x[col_off + c];
-                rhs[r] -= s;
-            }
-        }
-
-        // Теперь решаем A_ii * x_i = rhs
-        int diag_off = row_off;
-        for (int i = 0; i < bs; ++i)
-        {
-            double s = rhs[i];
-            for (int j = 0; j < i; ++j)
-                s -= A[(diag_off + i) * n + (diag_off + j)] * x[diag_off + j];
-            x[diag_off + i] = s / A[(diag_off + i) * n + (diag_off + i)];
-        }
-    }
-}
-
-
 
 
 void multiplication(double* Result, double* Block_A, double* Block_B, const int row_A, const int col_row,const int col_B)
@@ -1070,19 +918,23 @@ int solution(int n, int m, double *a, double *b, double *x,
             // printf("Block[%d,%d]\n",i,j);
             // printlxn(block_mm,m,m,m,m);
 
-            inverse(invblock_mm,block_mm,m,eps);
+            
             // printlxn(invblock_mm,m,m,m,m);
 
-            if(invblock_mm)
+            if(inverse(invblock_mm,block_mm,m,eps))
                 {
+
+                   
                 //     cout<<"inverse "<<i<<" "<<j<<" with norm = "<<normofmatrix(invblock_mm,m)<<endl;
 
                 // printlxn(invblock_mm,m,m,m,m);
 
                 if(normofmatrix(invblock_mm,m) < minNorm) 
                     {
+                        
                         minNorm = normofmatrix(invblock_mm,m);
                         mainBlock = j;
+                       
                     }
                 }
 
@@ -1108,8 +960,9 @@ int solution(int n, int m, double *a, double *b, double *x,
         if(mainBlock != i)
             {
                 swap_block_columns(a,n,m,i,mainBlock);
+                printlxn(a,n,n,n,n);
                 swap(colsw[i],colsw[mainBlock]);
-                cout<<"swapped "<< i<<" "<<mainBlock<<"in row "<<i<<endl;
+                // cout<<"swapped "<< i<<" "<<mainBlock<<" in row "<<i<<endl;
             }
         
         
@@ -1121,7 +974,8 @@ int solution(int n, int m, double *a, double *b, double *x,
             
             if(!(inverse(diaginvblock_mm,diagblock_mm,m,eps)))
             {
-                        printf("block has no inverse\n");
+                        printf("no blocks in row has inverse block\n");
+                        
                         return -1;
                     }
 
@@ -1298,10 +1152,27 @@ int solution(int n, int m, double *a, double *b, double *x,
         }
     }
 
+    // cout<<"Vector x before swap :"<<endl;
+    // printlxn(x,n,1,n,n);
+
+    
+
     for(int i = 0 ; i < k ; i++)
     {
-        swap_block_vec(x,n,m,i,colsw[i]);
+        
+
+        if(i != colsw[i]){ 
+            int t;
+            swap_block_vec(x,n,m,i,colsw[i]);
+            t = colsw[colsw[i]];
+            colsw[colsw[i]] = colsw[i];
+            colsw[i] = t; 
+        }
+
+
     }
+
+    
 
     return 0;
 
