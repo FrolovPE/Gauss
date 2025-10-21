@@ -960,7 +960,7 @@ int solution(int n, int m, double *a, double *b, double *x,
         if(mainBlock != i)
             {
                 swap_block_columns(a,n,m,i,mainBlock);
-                printlxn(a,n,n,n,n);
+                // printlxn(a,n,n,n,n);
                 swap(colsw[i],colsw[mainBlock]);
                 // cout<<"swapped "<< i<<" "<<mainBlock<<" in row "<<i<<endl;
             }

@@ -20,3 +20,10 @@ gp.out: $(obj)
 ga.out: $(obj)
 
 	g++ $(wo3) $(obj) -o ga.out
+
+git:
+	 git add main.cpp lib.cpp lib.h makefile
+	 git commit -m echo $(date -R | head -c 26)
+
+push:
+	git push
