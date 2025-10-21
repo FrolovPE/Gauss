@@ -10,3 +10,4 @@ if [ $f != "cc" ]; then
 else
 	echo nice
 fi
+
