@@ -29,3 +29,4 @@ push:
 
 test:
 	./test.sh  $(testfold)
+	
