@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 if [ $# != 1 ]; then
 	echo "Usage: test.sh <dir>"
 else

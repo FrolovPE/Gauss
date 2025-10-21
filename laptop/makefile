@@ -24,6 +24,7 @@ ga.out: $(obj)
 git:
 	./commit.sh
 	
+	
 
 push:
 	git push

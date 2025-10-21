@@ -686,6 +686,7 @@ void vec_mult_sub(double* Result, double* A, double* vec, int m) {
 
     for (int i = 0; i < m; i++)
     {
+        
         temp[i] = 0;
         double sum = 0;
         for (int j = 0; j < m; j++) {
