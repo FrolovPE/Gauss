@@ -22,6 +22,7 @@ ga.out: $(obj)
 	g++ $(wo3) $(obj) -o ga.out
 
 git:
+	./commit.sh
 	
 
 push:
@@ -29,4 +30,4 @@ push:
 
 test:
 	./test.sh  $(testfold)
-	
+
