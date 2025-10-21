@@ -906,7 +906,7 @@ int solution(int n, int m, double *a, double *b, double *x,
 
     for(int i = 0 ; i < k + is_l; i++)
     {   
-        double minNorm = 1e64;
+        double minNorm = std::numeric_limits<double>::infinity();
         int mainBlock = i;
 
         if(i != k)
@@ -952,7 +952,7 @@ int solution(int n, int m, double *a, double *b, double *x,
             minNorm = normofmatrix(invblock_ll,l);
         }
 
-        if(fabs(minNorm - 1e64) < eps)
+        if(fabs(minNorm - std::numeric_limits<double>::infinity()) < eps)
         {
             printf("No inverse matrix in row %d\n",i);
             return -1;
@@ -1021,7 +1021,7 @@ int solution(int n, int m, double *a, double *b, double *x,
 
                 if(!(inverse(invblock_ll,block_ll,l,eps)))
                     {
-                        printf("block has no inverse\n");
+                        printf("ll block has no inverse\n");
                         return -1;
                     }
 

@@ -14,15 +14,23 @@ else
 		if [ $ext != "sh" ] && [ $ii != "3" ] && [ $ext != "." ] && [ $ext != "zip" ]; then
 		         if [ $filename == "c" ] || [ $filename == "d" ] || [ $filename == "e" ]; then
 				 echo $i
-		                 echo "./a.out 6 2 6 0 $ii"
-		                 ./a.out 6 2 6 0 $i
+				 		
+						for((k = 1; k <= 6 ; k++)); do
+						echo "--------------------------------------------------------------------------"
+		                 echo "./a.out 6 $k 6 0 $ii"
+		                 ./a.out 6 $k 6 0 $i
 		                 echo ""
+						 done
 		         else
 		             echo ""
 		             echo $i
-			     echo "./a.out 4 2 4 0 $ii"
-		             ./a.out 4 2 4 0 $i
+						for((k = 1; k <= 4 ; k++)); do
+						echo "--------------------------------------------------------------------------"
+			     		echo "./a.out 4 $k 4 0 $ii"
+		                ./a.out 4 $k 4 0 $i
+						done
 		         fi
 		fi
+		echo
 	 done
 fi
