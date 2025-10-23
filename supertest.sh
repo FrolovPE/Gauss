@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ $# != 2 ]; then
-	echo "Usage: test.sh <a.out> <r>"
+	echo "Usage: supertest.sh <a.out> <r>"
 else
     exe=$1
     r=$2
