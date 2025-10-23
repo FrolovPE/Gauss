@@ -1,10 +1,11 @@
 #!/bin/bash
 
-if [ $# != 2 ]; then
-	echo "Usage: supertest.sh <a.out> <r>"
+if [ $# != 3 ]; then
+	echo "Usage: supertest.sh <a.out> <r> <n(до какого n делать тесты)>"
 else
     exe=$1
     r=$2
+    n=$3
     
     if [ -f $exe ];then
     echo
@@ -13,7 +14,7 @@ else
         exit
     fi
 
-    for((i=2; i<1000; i++)); do
+    for((i=2; i<=$n; i++)); do
 
         for((j=1; j<i; j++)); do
 

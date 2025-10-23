@@ -880,14 +880,14 @@ int solution(int n, int m, double *a, double *b, double *x,
     double *tmpblock_mm,double *tmpblock_ml,double *tmpblock_ml1,double *tmpblock_ll,double *tmpvecb_m,double *tmpvecb_l,const double eps)
 {
     
-    m=m;
-    a=a;
-    b=b;
-    block_ml=block_ml;
-    diaginvblock_mm=diaginvblock_mm;
-    diagblock_mm=diagblock_mm;
-    vecb_l=vecb_l;
-    tmpblock_ml1 = tmpblock_ml1;
+    // m=m;
+    // a=a;
+    // b=b;
+    // block_ml=block_ml;
+    // diaginvblock_mm=diaginvblock_mm;
+    // diagblock_mm=diagblock_mm;
+    // vecb_l=vecb_l;
+    // tmpblock_ml1 = tmpblock_ml1;
 
     
 
@@ -947,7 +947,7 @@ int solution(int n, int m, double *a, double *b, double *x,
 
             if(!inverse(invblock_ll,block_ll,l,eps))
             {
-                printf("Block [%d,%d] (block[l,l] in our matrix)  has no inverse\n",k,k);
+                printf("Block [%d,%d] (block[l,l] in our matrix)  has no inverse after the transformations\n",k,k);
                 return -1;
             }
             
@@ -958,8 +958,11 @@ int solution(int n, int m, double *a, double *b, double *x,
         }
 
         if((fabs(minNorm - 1e64) < eps))
-        {
-            printf("No inverse matrix in row %d\n",i);
+        {   
+            if(i!=0)
+                printf("No inverse matrix in row %d after the transformations\n",i);
+            else
+                printf("No inverse matrix in row %d\n",i);
             return -1;
         }
 

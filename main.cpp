@@ -29,6 +29,14 @@ int main(int argc, char *argv[])
         return 0;
     }
 
+    if(m<=0 || n<0 || r<0 || s<0)
+    {
+        printf("<n> or <m> or <r> or <s> <= 0, usage m,n,r,s > 0");
+        return 0;
+    }
+
+    
+
     double *a = new double[n*n]; //create matrix a
     double *b = new double[n];  // create vector b
     double *x = new double[n];  // create vector x
