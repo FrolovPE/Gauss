@@ -1,10 +1,46 @@
 #!/bin/bash
 
+# echo "Usage: test.sh <executable(./a.out, './' before file must have)> <dir(example matr/ , '/' after dir name must have )>"
+# sleep 3
 
-if [ $# != 1 ]; then
-	echo "Usage: test.sh <dir>"
+
+if [ $# != 2 ]; then
+	echo "Usage: test.sh <executable(./a.out or a.out)> <dir(example matr/ , '/' is must have )>"
 else
-	 for i in $1*; do
+	
+	 exe=$1
+	 dir=$2
+
+	
+
+	 if [ -f $exe ];then
+		echo -n
+	else 
+		echo "executable file doesn't exist"
+		exit
+	fi
+
+	if [ "./" == *"$exe"* ]; then
+	 	echo -n
+	else
+		exe="./$exe"
+	fi
+
+	if [ -d $dir ];then
+		echo -n
+	else 
+		echo "dir doesn't exist"
+		exit
+	fi
+
+
+	if [ "/" == *"$dir"* ]; then
+	 	echo -n
+	else
+		dir="$dir/"
+	fi
+
+	 for i in $dir*; do
 	     ii="${i##*/}"
 	     filename="${i%.*}"
 	     filename="${filename##*/}"
@@ -17,8 +53,8 @@ else
 				 		
 						for((k = 1; k <= 6 ; k++)); do
 						echo "--------------------------------------------------------------------------"
-		                 echo "./a.out 6 $k 6 0 $ii"
-		                 ./a.out 6 $k 6 0 $i
+		                 echo "$exe 6 $k 6 0 $ii"
+		                 $exe 6 $k 6 0 $i
 		                 echo ""
 						 done
 		         else
@@ -26,8 +62,8 @@ else
 		             echo $i
 						for((k = 1; k <= 4 ; k++)); do
 						echo "--------------------------------------------------------------------------"
-			     		echo "./a.out 4 $k 4 0 $ii"
-		                ./a.out 4 $k 4 0 $i
+			     		echo "$exe 4 $k 4 0 $ii"
+		                $exe 4 $k 4 0 $i
 						done
 		         fi
 		fi
