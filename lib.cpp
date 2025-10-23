@@ -249,7 +249,7 @@ double normofmatrix(double *a , int size)
         return -1;
     }
 
-    double mm = 0;
+    double mm = -1;
 
     for(int j = 0; j< size ; j++)
     {
@@ -906,7 +906,8 @@ int solution(int n, int m, double *a, double *b, double *x,
 
     for(int i = 0 ; i < k + is_l; i++)
     {   
-        double minNorm = std::numeric_limits<double>::infinity();
+        double minNorm = 1e64;
+
         int mainBlock = i;
 
         if(i != k)
@@ -916,8 +917,8 @@ int solution(int n, int m, double *a, double *b, double *x,
 
             get_block(a,block_mm,n,m,i,j);
 
-            // printf("Block[%d,%d]\n",i,j);
-            // printlxn(block_mm,m,m,m,m);
+    //             printf("Block[%d,%d]\n",i,j);
+    //             printlxn(block_mm,m,m,m,m);
 
             
             // printlxn(invblock_mm,m,m,m,m);
@@ -925,10 +926,10 @@ int solution(int n, int m, double *a, double *b, double *x,
             if(inverse(invblock_mm,block_mm,m,eps))
                 {
 
-                   
-                //     cout<<"inverse "<<i<<" "<<j<<" with norm = "<<normofmatrix(invblock_mm,m)<<endl;
-
-                // printlxn(invblock_mm,m,m,m,m);
+                        
+//                     cout<<"inverse "<<i<<" "<<j<<" with norm = "<<normofmatrix(invblock_mm,m)<<endl;
+// 
+//                 printlxn(invblock_mm,m,m,m,m);
 
                 if(normofmatrix(invblock_mm,m) < minNorm) 
                     {
@@ -943,16 +944,20 @@ int solution(int n, int m, double *a, double *b, double *x,
 
         }else{
             get_block(a,block_ll,n,m,k,k);
-            inverse(invblock_ll,block_ll,l,eps);
-            if(!invblock_ll)
+
+            if(!inverse(invblock_ll,block_ll,l,eps))
             {
-                printf("Block [%d,%d] has no inverse\n",k,k);
+                printf("Block [%d,%d] (block[l,l] in our matrix)  has no inverse\n",k,k);
                 return -1;
             }
+            
+            
+//             printlxn(invblock_ll,l,l,l,l);
             minNorm = normofmatrix(invblock_ll,l);
+            
         }
 
-        if(fabs(minNorm - std::numeric_limits<double>::infinity()) < eps)
+        if((fabs(minNorm - 1e64) < eps))
         {
             printf("No inverse matrix in row %d\n",i);
             return -1;

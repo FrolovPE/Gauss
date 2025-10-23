@@ -1,6 +1,10 @@
 #include <iostream>
 #include "lib.h"
 #include <chrono>
+#include <fenv.h>
+int feenableexcept(int excepts);
+int fedisableexcept(int excepts);
+int fegetexcept(void);
 
 
 using namespace std;
@@ -12,6 +16,7 @@ int main(int argc, char *argv[])
     char *filename=nullptr;
     double r1=0, r2=0,el;
     double t1=0, t2=0;
+    feenableexcept(FE_DIVBYZERO | FE_INVALID | FE_OVERFLOW | FE_UNDERFLOW);
 
 
     
@@ -105,6 +110,7 @@ int main(int argc, char *argv[])
     if(normofmatrix(a,n) < EPS64)
     {
         printf("Norm of matrix A < 1e-64 \n");
+        r1 = -1;r2 = -1;
         report(argv[0],task,r1,r2,t1,t2,s,n,m); 
         delete []a;
         delete []b;
@@ -177,6 +183,8 @@ int main(int argc, char *argv[])
     double *tmpvecb_l = new double[l]; 
     int *colsw = new int[k];
     double eps = 1e-15*normofmatrix(a,n);
+    
+//     printf("norm A  = %lf \n",normofmatrix(a,n));
 
     auto start_sol= std::chrono::high_resolution_clock::now();
 
